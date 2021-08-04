@@ -12,6 +12,10 @@ const app = express();
 
 app.use(cors());
 
+app.get("/", () => {
+  console.log("Application is working");
+});
+
 app.use(USER_ROUTE, UserRoutes);
 
 app.listen(PORT, () => {
