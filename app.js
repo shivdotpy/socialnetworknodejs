@@ -3,7 +3,11 @@ const chalk = require("chalk");
 const cors = require("cors");
 
 const { PORT } = require("./src/utils/settings");
-const { WELCOME_MESSAGE, USER_ROUTE } = require("./src/utils/constants");
+const {
+  WELCOME_MESSAGE,
+  USER_ROUTE,
+  INITIAL_PAGE_MESSAGE,
+} = require("./src/utils/constants");
 
 // Routes
 const UserRoutes = require("./src/routes/user.route");
@@ -11,6 +15,10 @@ const UserRoutes = require("./src/routes/user.route");
 const app = express();
 
 app.use(cors());
+
+app.get("/", (req, res) =>
+  res.status(200).send({ error: false, message: INITIAL_PAGE_MESSAGE })
+);
 
 app.use(USER_ROUTE, UserRoutes);
 
