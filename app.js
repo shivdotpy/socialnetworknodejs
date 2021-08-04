@@ -3,6 +3,7 @@ const chalk = require("chalk");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+require("dotenv").config();
 
 const { PORT } = require("./src/utils/settings");
 const {
@@ -14,10 +15,10 @@ const {
 // Routes
 const UserRoutes = require("./src/routes/user.route");
 
-mongoose.connect(
-  "mongodb+srv://shiv:shiv@cluster0.athf3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-  { useNewUrlParser: true, useUnifiedTopology: true }
-);
+mongoose.connect(process.env.MONGODB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 const app = express();
 
