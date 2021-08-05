@@ -10,6 +10,10 @@ const userModel = Schema({
   password: {
     type: String,
   },
+  activated: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = model("user", userModel);
