@@ -1,3 +1,5 @@
+const router = require("express").Router();
+
 const {
   signup,
   activateAccount,
@@ -5,14 +7,9 @@ const {
   resendActivationCode,
 } = require("../controllers/user.controller");
 
-const router = require("express").Router();
-
 router.post("/signup", signup);
-
 router.post("/activate", activateAccount);
-
 router.post("/resend-activate-code", resendActivationCode);
-
 router.post("/signin", signin);
 
 module.exports = router;
