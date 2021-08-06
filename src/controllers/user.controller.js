@@ -1,4 +1,6 @@
 const { generatePin } = require("generate-pin");
+const jwt = require("jsonwebtoken");
+
 const sendEmail = require("../utils/mailer");
 
 // Models
@@ -16,6 +18,8 @@ const {
   VALID_CODE,
   ACCOUNT_ACTIVATED,
   SOMETHING_WRONG,
+  ACCOUNT_NOT_AVAILABLE,
+  INVALID_PASSWORD,
 } = require("../utils/constants");
 
 exports.signup = async (req, res) => {
@@ -97,5 +101,35 @@ exports.activateAccount = async (req, res) => {
         message: SOMETHING_WRONG,
       });
     }
+  }
+};
+
+exports.signin = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email) {
+    return res.status(400).send({ error: true, message: ENTER_EMAIL });
+  }
+
+  if (!password) {
+    return res.status(403).send({ error: true, message: ENTER_PASSWORD });
+  }
+
+  const user = await UserModel.findOne({ email });
+  if (!user) {
+    return res.status(401).send({
+      error: true,
+      message: ACCOUNT_NOT_AVAILABLE,
+    });
+  }
+
+  if (user.password !== password) {
+    return res.status(401).send({ error: true, message: INVALID_PASSWORD });
+  } else {
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY);
+    return res.status(200).send({
+      error: false,
+      data: { token, name: user.name, email: user.email },
+    });
   }
 };
