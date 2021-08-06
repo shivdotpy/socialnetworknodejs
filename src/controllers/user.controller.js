@@ -20,6 +20,8 @@ const {
   SOMETHING_WRONG,
   ACCOUNT_NOT_AVAILABLE,
   INVALID_PASSWORD,
+  ACCOUNT_ALREADY_ACTIVATED,
+  ACTIVATE_CODE_RESEND,
 } = require("../utils/constants");
 
 exports.signup = async (req, res) => {
@@ -81,7 +83,9 @@ exports.activateAccount = async (req, res) => {
   // check if code available in db
   const activateCodeObj = await ActivateModel.findOne({ email });
   if (!activateCodeObj) {
-    return res.status(400).send({ error: true, message: VALID_CODE });
+    return res
+      .status(400)
+      .send({ error: true, message: ACCOUNT_ALREADY_ACTIVATED });
   } else if (activateCodeObj.code !== code) {
     return res.status(400).send({ error: true, message: VALID_CODE });
   } else {
@@ -101,6 +105,50 @@ exports.activateAccount = async (req, res) => {
         message: SOMETHING_WRONG,
       });
     }
+  }
+};
+
+exports.resendActivationCode = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).send({ error: true, message: ENTER_EMAIL });
+  }
+
+  // Check if user already activated
+  const user = await UserModel.findOne({ email });
+  if (user.activated) {
+    return res.status(401).send({
+      error: true,
+      message: ACCOUNT_ALREADY_ACTIVATED,
+    });
+  }
+
+  const activateCodeObj = await ActivateModel.findOne({ email });
+  if (activateCodeObj) {
+    // update code and send email
+    const code = generatePin(1);
+    sendEmail(email, "Resend: Activation Email", code[0]);
+
+    // upcate code to activate account (pin)
+    ActivateModel.findOneAndUpdate({ email }, { code: code[0] }).exec();
+
+    return res
+      .status(200)
+      .send({ error: false, message: ACTIVATE_CODE_RESEND });
+  } else {
+    const code = generatePin(1);
+    sendEmail(email, "Resend: Activation Email", code[0]);
+
+    // save to activate account (pin)
+    const Activate = new ActivateModel({
+      email,
+      code: code[0],
+    });
+    Activate.save();
+
+    return res
+      .status(200)
+      .send({ error: false, message: ACTIVATE_CODE_RESEND });
   }
 };
 
