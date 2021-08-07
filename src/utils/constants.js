@@ -18,5 +18,7 @@ exports.ACCOUNT_CREATED =
 exports.ENTER_CODE = "Please enter code";
 exports.VALID_CODE = "Please enter valid code";
 exports.ACCOUNT_ACTIVATED = "Your account is activated";
+exports.ACCOUNT_ALREADY_ACTIVATED = "Your account is already activated";
 exports.ACCOUNT_NOT_AVAILABLE = "This account is not available";
 exports.INVALID_PASSWORD = "Password is incorrect please try again";
+exports.ACTIVATE_CODE_RESEND = "Code successfully sent to your email";
