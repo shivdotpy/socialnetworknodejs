@@ -18,6 +18,9 @@ exports.createPost = (req, res) => {
 };
 
 exports.getLatestPosts = async (req, res) => {
-  const posts = await PostModel.find().limit(10).sort({ updatedAt: "desc" });
+  const posts = await PostModel.find()
+    .limit(10)
+    .sort({ updatedAt: "desc" })
+    .populate("user", "name");
   return res.status(200).send({ error: false, data: posts });
 };

@@ -4,7 +4,7 @@ const postModel = Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
     },
     text: {
       type: String,
@@ -12,13 +12,13 @@ const postModel = Schema(
     comments: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Post",
+        ref: "post",
       },
     ],
     likes: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Post",
+        ref: "post",
       },
     ],
   },

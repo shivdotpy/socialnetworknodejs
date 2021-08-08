@@ -10,7 +10,11 @@ exports.authMiddleware = (req, res, next) => {
     return res.status(401).send({ error: true, message: NO_ACCESS_TOKEN });
   }
   try {
-    jwt.verify(authorization.split(" ")[1], process.env.JWT_SECRET_KEY);
+    const decode = jwt.verify(
+      authorization.split(" ")[1],
+      process.env.JWT_SECRET_KEY
+    );
+    req.userId = decode._id;
   } catch (e) {
     console.log("Authorization Middleware Error: ", e);
     return res.status(401).send({ error: true, message: SESSION_EXPIRED });
