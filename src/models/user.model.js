@@ -15,6 +15,12 @@ const userModel = Schema(
       type: Boolean,
       default: false,
     },
+    post: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
   },
   { timestamps: true }
 );
