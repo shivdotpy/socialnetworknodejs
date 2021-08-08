@@ -12,13 +12,13 @@ const postModel = Schema(
     comments: [
       {
         type: Schema.Types.ObjectId,
-        ref: "post",
+        ref: "user",
       },
     ],
     likes: [
       {
         type: Schema.Types.ObjectId,
-        ref: "post",
+        ref: "user",
       },
     ],
   },

@@ -28,6 +28,10 @@ exports.ACTIVATE_CODE_RESEND = "Code successfully sent to your email";
 exports.ENTER_TEXT = "Please enter some text";
 exports.POST_CREATED = "Post created successfully";
 
+// API MESSAGES (LIKES)
+exports.POST_LIKED = "Post liked";
+exports.POST_DISLIKED = "Post disliked";
+
 // AUTHORIZATION MESSAGES
 exports.NO_ACCESS_TOKEN = "Please provide access token";
 exports.SESSION_EXPIRED = "Session expired please login again";
