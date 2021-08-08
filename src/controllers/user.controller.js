@@ -116,6 +116,13 @@ exports.resendActivationCode = async (req, res) => {
 
   // Check if user already activated
   const user = await UserModel.findOne({ email });
+  if (!user) {
+    return res.status(401).send({
+      error: true,
+      message: ACCOUNT_NOT_AVAILABLE,
+    });
+  }
+
   if (user.activated) {
     return res.status(401).send({
       error: true,
