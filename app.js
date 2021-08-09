@@ -10,10 +10,12 @@ const {
   WELCOME_MESSAGE,
   USER_ROUTE,
   INITIAL_PAGE_MESSAGE,
+  POST_ROUTE,
 } = require("./src/utils/constants");
 
 // Routes
 const UserRoutes = require("./src/routes/user.route");
+const PostRoutes = require("./src/routes/post.route");
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -32,6 +34,7 @@ app.get("/", (req, res) =>
 );
 
 app.use(USER_ROUTE, UserRoutes);
+app.use(POST_ROUTE, PostRoutes);
 
 app.listen(PORT, () => {
   console.log(chalk.white.bgBlack.bold(WELCOME_MESSAGE));
