@@ -28,6 +28,9 @@ exports.ACTIVATE_CODE_RESEND = "Code successfully sent to your email";
 exports.ENTER_TEXT = "Please enter some text";
 exports.POST_CREATED = "Post created successfully";
 
+// API MESSAGES (COMMENTS)
+exports.COMMENT_SAVED = "Comment saved successfully";
+
 // API MESSAGES (LIKES)
 exports.POST_LIKED = "Post liked";
 exports.POST_DISLIKED = "Post disliked";

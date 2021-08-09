@@ -5,6 +5,7 @@ const {
   ENTER_TEXT,
   POST_LIKED,
   POST_DISLIKED,
+  COMMENT_SAVED,
 } = require("../utils/constants");
 
 exports.createPost = (req, res) => {
@@ -26,9 +27,14 @@ exports.getLatestPosts = async (req, res) => {
   const posts = await PostModel.find()
     .limit(10)
     .sort({ updatedAt: "desc" })
-    .populate("user", "name");
-  // .populate("likes", "name"); // Can use in future if likes user is needed in posts
-  return res.status(200).send({ error: false, data: posts });
+    .populate("user", "name")
+    .populate("comments.user", "name");
+
+  const postsClone = [...posts];
+  postsClone.forEach((post) => {
+    post.comments.sort((c1, c2) => c2.updatedAt - c1.updatedAt);
+  });
+  return res.status(200).send({ error: false, data: postsClone });
 };
 
 exports.likePost = async (req, res) => {
@@ -49,4 +55,19 @@ exports.dislikePost = (req, res) => {
   }).exec();
 
   return res.status(200).send({ error: false, message: POST_DISLIKED });
+};
+
+exports.addComment = async (req, res) => {
+  const { text } = req.body;
+  const { id } = req.params;
+
+  if (!text) {
+    return res.status(400).send({ error: true, message: ENTER_TEXT });
+  }
+
+  PostModel.findByIdAndUpdate(id, {
+    $push: { comments: { text, user: req.userId } },
+  }).exec();
+
+  return res.status(200).send({ error: true, message: COMMENT_SAVED });
 };

@@ -11,8 +11,16 @@ const postModel = Schema(
     },
     comments: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "user",
+        type: new Schema(
+          {
+            text: { type: String },
+            user: {
+              type: Schema.Types.ObjectId,
+              ref: "user",
+            },
+          },
+          { timestamps: true }
+        ),
       },
     ],
     likes: [
