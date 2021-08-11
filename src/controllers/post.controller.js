@@ -8,7 +8,7 @@ const {
   COMMENT_SAVED,
 } = require("../utils/constants");
 
-exports.createPost = (req, res) => {
+exports.createPost = async (req, res) => {
   const { text } = req.body;
 
   if (!text) {
@@ -19,7 +19,9 @@ exports.createPost = (req, res) => {
     user: req.userId,
     text,
   });
-  Post.save();
+  const createdPost = await Post.save();
+  global.socket.emit("new-post", await PostModel.populate(createdPost, {path:"user", select: 'name'}));
+
   return res.status(200).send({ error: false, message: POST_CREATED });
 };
 
