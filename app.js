@@ -1,4 +1,3 @@
-const chalk = require("chalk");
 const cors = require("cors");
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
@@ -42,4 +41,8 @@ app.use(POST_ROUTE, PostRoutes);
 
 io.on("connection", function (socket) {
   console.log("Socket Client connected...", socket.id);
+
+  // set socket to global variable
+  global.socket = socket;
+
 });

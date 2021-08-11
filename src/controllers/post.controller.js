@@ -8,7 +8,7 @@ const {
   COMMENT_SAVED,
 } = require("../utils/constants");
 
-exports.createPost = (req, res) => {
+exports.createPost = async (req, res) => {
   const { text } = req.body;
 
   if (!text) {
@@ -19,7 +19,9 @@ exports.createPost = (req, res) => {
     user: req.userId,
     text,
   });
-  Post.save();
+  const createdPost = await Post.save();
+  global.socket.emit("new-post", await PostModel.populate(createdPost, {path:"user", select: 'name'}));
+
   return res.status(200).send({ error: false, message: POST_CREATED });
 };
 
@@ -40,19 +42,23 @@ exports.getLatestPosts = async (req, res) => {
 exports.likePost = async (req, res) => {
   const { id } = req.params;
 
-  PostModel.findByIdAndUpdate(id, {
+  const updatedPost = await PostModel.findByIdAndUpdate(id, {
     $push: { likes: req.userId },
-  }).exec();
+  }, {new: true})
+
+  global.socket.emit("new-like", {_id: updatedPost._id, likes: updatedPost.likes})
 
   return res.status(200).send({ error: false, message: POST_LIKED });
 };
 
-exports.dislikePost = (req, res) => {
+exports.dislikePost = async (req, res) => {
   const { id } = req.params;
 
-  PostModel.findByIdAndUpdate(id, {
+  const updatedPost = await PostModel.findByIdAndUpdate(id, {
     $pull: { likes: req.userId },
-  }).exec();
+  }, {new: true})
+
+  global.socket.emit("new-like", {_id: updatedPost._id, likes: updatedPost.likes})
 
   return res.status(200).send({ error: false, message: POST_DISLIKED });
 };
