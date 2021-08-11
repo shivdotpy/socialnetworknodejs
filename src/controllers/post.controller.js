@@ -42,19 +42,23 @@ exports.getLatestPosts = async (req, res) => {
 exports.likePost = async (req, res) => {
   const { id } = req.params;
 
-  PostModel.findByIdAndUpdate(id, {
+  const updatedPost = await PostModel.findByIdAndUpdate(id, {
     $push: { likes: req.userId },
-  }).exec();
+  }, {new: true})
+
+  global.socket.emit("new-like", {_id: updatedPost._id, likes: updatedPost.likes})
 
   return res.status(200).send({ error: false, message: POST_LIKED });
 };
 
-exports.dislikePost = (req, res) => {
+exports.dislikePost = async (req, res) => {
   const { id } = req.params;
 
-  PostModel.findByIdAndUpdate(id, {
+  const updatedPost = await PostModel.findByIdAndUpdate(id, {
     $pull: { likes: req.userId },
-  }).exec();
+  }, {new: true})
+
+  global.socket.emit("new-like", {_id: updatedPost._id, likes: updatedPost.likes})
 
   return res.status(200).send({ error: false, message: POST_DISLIKED });
 };
