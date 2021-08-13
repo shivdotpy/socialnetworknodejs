@@ -20,7 +20,10 @@ exports.createPost = async (req, res) => {
     text,
   });
   const createdPost = await Post.save();
-  global.socket.emit("new-post", await PostModel.populate(createdPost, {path:"user", select: 'name'}));
+  if (global.socket && global.socket.emit) {
+    global.socket.emit("new-post", await PostModel.populate(createdPost, {path:"user", select: 'name'}));
+  }
+  
 
   return res.status(200).send({ error: false, message: POST_CREATED });
 };
@@ -46,8 +49,9 @@ exports.likePost = async (req, res) => {
     $push: { likes: req.userId },
   }, {new: true})
 
-  global.socket.emit("new-like", {_id: updatedPost._id, likes: updatedPost.likes})
-
+  if (global.socket && global.socket.emit) {
+    global.socket.emit("new-like", {_id: updatedPost._id, likes: updatedPost.likes})
+  }
   return res.status(200).send({ error: false, message: POST_LIKED });
 };
 
@@ -58,7 +62,9 @@ exports.dislikePost = async (req, res) => {
     $pull: { likes: req.userId },
   }, {new: true})
 
-  global.socket.emit("new-like", {_id: updatedPost._id, likes: updatedPost.likes})
+  if (global.socket && global.socket.emit) {
+    global.socket.emit("new-like", {_id: updatedPost._id, likes: updatedPost.likes})
+  }
 
   return res.status(200).send({ error: false, message: POST_DISLIKED });
 };
