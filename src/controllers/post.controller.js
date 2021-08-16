@@ -20,10 +20,12 @@ exports.createPost = async (req, res) => {
     text,
   });
   const createdPost = await Post.save();
-  if (global.socket && global.socket.emit) {
-    global.socket.emit("new-post", await PostModel.populate(createdPost, {path:"user", select: 'name'}));
+  if (global.io && global.io.sockets && global.io.sockets.emit) {
+    global.io.sockets.emit(
+      "new-post",
+      await PostModel.populate(createdPost, { path: "user", select: "name" })
+    );
   }
-  
 
   return res.status(200).send({ error: false, message: POST_CREATED });
 };
@@ -45,12 +47,19 @@ exports.getLatestPosts = async (req, res) => {
 exports.likePost = async (req, res) => {
   const { id } = req.params;
 
-  const updatedPost = await PostModel.findByIdAndUpdate(id, {
-    $push: { likes: req.userId },
-  }, {new: true})
+  const updatedPost = await PostModel.findByIdAndUpdate(
+    id,
+    {
+      $push: { likes: req.userId },
+    },
+    { new: true }
+  );
 
-  if (global.socket && global.socket.emit) {
-    global.socket.emit("new-like", {_id: updatedPost._id, likes: updatedPost.likes})
+  if (global.io && global.io.sockets && global.io.sockets.emit) {
+    global.io.sockets.emit("new-like", {
+      _id: updatedPost._id,
+      likes: updatedPost.likes,
+    });
   }
   return res.status(200).send({ error: false, message: POST_LIKED });
 };
@@ -58,12 +67,19 @@ exports.likePost = async (req, res) => {
 exports.dislikePost = async (req, res) => {
   const { id } = req.params;
 
-  const updatedPost = await PostModel.findByIdAndUpdate(id, {
-    $pull: { likes: req.userId },
-  }, {new: true})
+  const updatedPost = await PostModel.findByIdAndUpdate(
+    id,
+    {
+      $pull: { likes: req.userId },
+    },
+    { new: true }
+  );
 
-  if (global.socket && global.socket.emit) {
-    global.socket.emit("new-like", {_id: updatedPost._id, likes: updatedPost.likes})
+  if (global.io && global.io.sockets && global.io.sockets.emit) {
+    global.io.sockets.emit("new-like", {
+      _id: updatedPost._id,
+      likes: updatedPost.likes,
+    });
   }
 
   return res.status(200).send({ error: false, message: POST_DISLIKED });

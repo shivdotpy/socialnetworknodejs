@@ -43,6 +43,5 @@ io.on("connection", function (socket) {
   console.log("Socket Client connected...", socket.id);
 
   // set socket to global variable
-  global.socket = socket;
-
+  global.io = io;
 });
