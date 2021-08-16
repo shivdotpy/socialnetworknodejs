@@ -184,7 +184,7 @@ exports.signin = async (req, res) => {
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY);
     return res.status(200).send({
       error: false,
-      data: { token, name: user.name, email: user.email },
+      data: { token, name: user.name, email: user.email, _id: user._id },
     });
   }
 };
