@@ -30,6 +30,25 @@ exports.createPost = async (req, res) => {
   return res.status(200).send({ error: false, message: POST_CREATED });
 };
 
+exports.deletePost = async (req, res) => {
+  const { id } = req.params;
+  const deletedItem = await PostModel.findByIdAndDelete(id);
+  if (!deletedItem) {
+    return res
+      .status(400)
+      .send({ error: false, message: "Please check post id" });
+  }
+
+  // Socket
+  if (global.io && global.io.sockets && global.io.sockets.emit) {
+    global.io.sockets.emit("delete-post", { _id: deletedItem._id });
+  }
+
+  return res
+    .status(200)
+    .send({ error: false, message: "Post deleted successfully" });
+};
+
 exports.getLatestPosts = async (req, res) => {
   const posts = await PostModel.find()
     .limit(10)
