@@ -181,7 +181,9 @@ exports.signin = async (req, res) => {
   if (user.password !== password) {
     return res.status(401).send({ error: true, message: INVALID_PASSWORD });
   } else {
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY);
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1d",
+    });
     return res.status(200).send({
       error: false,
       data: { token, name: user.name, email: user.email, _id: user._id },
