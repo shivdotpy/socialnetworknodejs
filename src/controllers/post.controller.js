@@ -33,7 +33,7 @@ exports.createPost = async (req, res) => {
 exports.getLatestPosts = async (req, res) => {
   const posts = await PostModel.find()
     .limit(10)
-    .sort({ updatedAt: "desc" })
+    .sort({ createdAt: "desc" })
     .populate("user", "name")
     .populate("comments.user", "name");
 
