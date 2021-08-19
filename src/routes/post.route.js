@@ -7,6 +7,7 @@ const {
   dislikePost,
   addComment,
   deletePost,
+  deleteComment,
 } = require("../controllers/post.controller");
 
 const { authMiddleware } = require("../middleware/auth.middleware");
@@ -17,5 +18,6 @@ router.get("/like/:id", authMiddleware, likePost);
 router.get("/dislike/:id", authMiddleware, dislikePost);
 router.post("/add-comment/:id", authMiddleware, addComment);
 router.delete("/delete/:id", authMiddleware, deletePost);
+router.delete("/delete-comment/:id", authMiddleware, deleteComment);
 
 module.exports = router;
