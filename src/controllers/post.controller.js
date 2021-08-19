@@ -131,7 +131,7 @@ exports.addComment = async (req, res) => {
 
   // Socket
   if (global.io && global.io.sockets && global.io.sockets.emit) {
-    global.io.sockets.emit("new-comment", {
+    global.io.sockets.emit("comments", {
       _id,
       comments,
     });
@@ -141,7 +141,28 @@ exports.addComment = async (req, res) => {
 };
 
 exports.deleteComment = async (req, res) => {
-  const { id } = req.params;
+  const { id, commentId } = req.params;
+  const updatedPost = await PostModel.findByIdAndUpdate(
+    id,
+    {
+      $pull: { comments: { _id: commentId } },
+    },
+    { new: true }
+  );
+
+  const { _id, comments } = await PostModel.populate(updatedPost, {
+    path: "comments.user",
+    select: "name",
+  });
+
+  // Socket
+  if (global.io && global.io.sockets && global.io.sockets.emit) {
+    global.io.sockets.emit("comments", {
+      _id,
+      comments,
+    });
+  }
+
   return res
     .status(200)
     .send({ error: false, message: "Comment deleted successfully" });
