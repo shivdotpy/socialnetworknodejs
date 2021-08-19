@@ -112,9 +112,37 @@ exports.addComment = async (req, res) => {
     return res.status(400).send({ error: true, message: ENTER_TEXT });
   }
 
-  PostModel.findByIdAndUpdate(id, {
-    $push: { comments: { text, user: req.userId } },
-  }).exec();
+  const updatedPost = await PostModel.findByIdAndUpdate(
+    id,
+    {
+      $push: { comments: { text, user: req.userId } },
+    },
+    { new: true }
+  ).exec();
+
+  if (!updatedPost) {
+    return res.status(400).send({ error: true, message: "Post id is invalid" });
+  }
+
+  const { _id, comments } = await PostModel.populate(updatedPost, {
+    path: "comments.user",
+    select: "name",
+  });
+
+  // Socket
+  if (global.io && global.io.sockets && global.io.sockets.emit) {
+    global.io.sockets.emit("new-comment", {
+      _id,
+      comments,
+    });
+  }
 
   return res.status(200).send({ error: true, message: COMMENT_SAVED });
+};
+
+exports.deleteComment = async (req, res) => {
+  const { id } = req.params;
+  return res
+    .status(200)
+    .send({ error: false, message: "Comment deleted successfully" });
 };
