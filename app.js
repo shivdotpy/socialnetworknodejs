@@ -2,6 +2,7 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const path = require("path");
 
 require("dotenv").config();
 
@@ -38,6 +39,8 @@ app.get("/", (req, res) =>
 
 app.use(USER_ROUTE, UserRoutes);
 app.use(POST_ROUTE, PostRoutes);
+
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 io.on("connection", function (socket) {
   console.log("Socket Client connected...", socket.id);

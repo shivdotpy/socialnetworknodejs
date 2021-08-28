@@ -186,7 +186,37 @@ exports.signin = async (req, res) => {
     });
     return res.status(200).send({
       error: false,
-      data: { token, name: user.name, email: user.email, _id: user._id },
+      data: {
+        token,
+        name: user.name,
+        email: user.email,
+        _id: user._id,
+        imgUrl: user.imgUrl,
+      },
     });
   }
+};
+
+exports.uploadUserImage = async (req, res) => {
+  console.log(req.file);
+  if (!req.file) {
+    return res.send({
+      error: true,
+      message: "Error uploading user image",
+    });
+  }
+
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    req.userId,
+    {
+      imgUrl: req.file.path,
+    },
+    { new: true }
+  );
+
+  return res.status(200).send({
+    error: false,
+    message: "Your profile image saved successfully.",
+    data: { imgUrl: updatedUser.imgUrl },
+  });
 };

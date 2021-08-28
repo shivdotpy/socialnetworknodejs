@@ -5,6 +5,9 @@ const userModel = Schema(
     name: {
       type: String,
     },
+    imgUrl: {
+      type: String,
+    },
     email: {
       type: String,
     },
