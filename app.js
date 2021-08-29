@@ -45,8 +45,20 @@ app.use(NOTIFICATION_ROUTE, NotificationRoutes);
 
 app.use("/public", express.static(path.join(__dirname, "public")));
 
+const onlineUsers = {};
+
 io.on("connection", function (socket) {
   console.log("Socket Client connected...", socket.id);
+
+  socket.on("login", (data) => {
+    onlineUsers[socket.id] = data._id;
+    io.emit("logged-users", onlineUsers);
+  });
+
+  socket.on("disconnect", function () {
+    delete onlineUsers[socket.id];
+    io.emit("logged-users", onlineUsers);
+  });
 
   // set socket to global variable
   global.io = io;
