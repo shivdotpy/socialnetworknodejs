@@ -15,8 +15,8 @@ exports.authMiddleware = (req, res, next) => {
       process.env.JWT_SECRET_KEY
     );
     req.userId = decode._id;
+    req.name = decode.name;
   } catch (e) {
-    console.log("Authorization Middleware Error: ", e);
     return res.status(401).send({ error: true, message: SESSION_EXPIRED });
   }
 

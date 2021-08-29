@@ -2,6 +2,7 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const path = require("path");
 
 require("dotenv").config();
 
@@ -16,11 +17,13 @@ const {
   USER_ROUTE,
   INITIAL_PAGE_MESSAGE,
   POST_ROUTE,
+  NOTIFICATION_ROUTE,
 } = require("./src/utils/constants");
 
 // Routes
 const UserRoutes = require("./src/routes/user.route");
 const PostRoutes = require("./src/routes/post.route");
+const NotificationRoutes = require("./src/routes/notification.route");
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -38,9 +41,24 @@ app.get("/", (req, res) =>
 
 app.use(USER_ROUTE, UserRoutes);
 app.use(POST_ROUTE, PostRoutes);
+app.use(NOTIFICATION_ROUTE, NotificationRoutes);
+
+app.use("/public", express.static(path.join(__dirname, "public")));
+
+const onlineUsers = {};
 
 io.on("connection", function (socket) {
   console.log("Socket Client connected...", socket.id);
+
+  socket.on("login", (data) => {
+    onlineUsers[socket.id] = data._id;
+    io.emit("logged-users", onlineUsers);
+  });
+
+  socket.on("disconnect", function () {
+    delete onlineUsers[socket.id];
+    io.emit("logged-users", onlineUsers);
+  });
 
   // set socket to global variable
   global.io = io;

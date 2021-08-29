@@ -6,6 +6,7 @@ const sendEmail = require("../utils/mailer");
 // Models
 const UserModel = require("../models/user.model");
 const ActivateModel = require("../models/activate.model");
+const NotificatiobModel = require("../models/nodtification.model");
 
 // Constants
 const {
@@ -22,6 +23,8 @@ const {
   INVALID_PASSWORD,
   ACCOUNT_ALREADY_ACTIVATED,
   ACTIVATE_CODE_RESEND,
+  ERROR_UPLOADING_IMAGE,
+  SUCCESS_UPLOADING_IMAGE,
 } = require("../utils/constants");
 
 exports.signup = async (req, res) => {
@@ -181,12 +184,96 @@ exports.signin = async (req, res) => {
   if (user.password !== password) {
     return res.status(401).send({ error: true, message: INVALID_PASSWORD });
   } else {
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { _id: user._id, name: user.name },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "1d",
+      }
+    );
     return res.status(200).send({
       error: false,
-      data: { token, name: user.name, email: user.email, _id: user._id },
+      data: {
+        token,
+        name: user.name,
+        email: user.email,
+        _id: user._id,
+        imgUrl: user.imgUrl,
+      },
     });
   }
+};
+
+exports.uploadUserImage = async (req, res) => {
+  if (!req.file) {
+    return res.send({
+      error: true,
+      message: ERROR_UPLOADING_IMAGE,
+    });
+  }
+
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    req.userId,
+    {
+      imgUrl: req.file.path,
+    },
+    { new: true }
+  );
+
+  return res.status(200).send({
+    error: false,
+    message: SUCCESS_UPLOADING_IMAGE,
+    data: { imgUrl: updatedUser.imgUrl },
+  });
+};
+
+exports.addFriend = async (req, res) => {
+  const { id } = req.params;
+
+  const Notification = new NotificatiobModel({
+    user: id,
+    message: `${req.name} wants to be your friend`,
+    requestedUser: req.userId,
+  });
+
+  const savedNotificaion = await Notification.save();
+
+  return res
+    .status(201)
+    .send({ error: false, message: "Friend request sent successfully" });
+};
+
+exports.acceptFriendRequest = async (req, res) => {
+  const { id } = req.params;
+
+  const notification = await NotificatiobModel.findById(id);
+
+  await UserModel.findByIdAndUpdate(
+    req.userId,
+    {
+      $push: { friends: notification.requestedUser },
+    },
+    { new: true }
+  );
+
+  await UserModel.findByIdAndUpdate(
+    notification.requestedUser,
+    {
+      $push: { friends: req.userId },
+    },
+    { new: true }
+  );
+
+  await notification.remove();
+  return res
+    .status(200)
+    .send({ error: false, message: "Friend request accepted" });
+};
+
+exports.getFriends = async (req, res) => {
+  const user = await UserModel.findById(req.userId).populate(
+    "friends",
+    "name imgUrl"
+  );
+  return res.status(200).send({ error: false, data: user.friends });
 };

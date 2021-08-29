@@ -5,6 +5,9 @@ const userModel = Schema(
     name: {
       type: String,
     },
+    imgUrl: {
+      type: String,
+    },
     email: {
       type: String,
     },
@@ -15,6 +18,12 @@ const userModel = Schema(
       type: Boolean,
       default: false,
     },
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
   },
   { timestamps: true }
 );

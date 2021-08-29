@@ -5,6 +5,7 @@ exports.SOMETHING_WRONG = "Something went wrong, please try again later";
 // Routes
 exports.USER_ROUTE = "/api/user";
 exports.POST_ROUTE = "/api/post";
+exports.NOTIFICATION_ROUTE = "/api/notification";
 
 // Mailer
 exports.FROM_EMAIL = "socialnodejs@gmail.com";
@@ -34,6 +35,10 @@ exports.COMMENT_SAVED = "Comment saved successfully";
 // API MESSAGES (LIKES)
 exports.POST_LIKED = "Post liked";
 exports.POST_DISLIKED = "Post disliked";
+
+// API MESSAGES (UPLOAD USER IMAGE)
+exports.ERROR_UPLOADING_IMAGE = "Error uploading user image";
+exports.SUCCESS_UPLOADING_IMAGE = "Your profile image saved successfully.";
 
 // AUTHORIZATION MESSAGES
 exports.NO_ACCESS_TOKEN = "Please provide access token";
