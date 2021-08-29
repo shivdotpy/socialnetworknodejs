@@ -18,6 +18,12 @@ const userModel = Schema(
       type: Boolean,
       default: false,
     },
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
   },
   { timestamps: true }
 );

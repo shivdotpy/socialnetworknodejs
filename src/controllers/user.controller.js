@@ -6,6 +6,7 @@ const sendEmail = require("../utils/mailer");
 // Models
 const UserModel = require("../models/user.model");
 const ActivateModel = require("../models/activate.model");
+const NotificatiobModel = require("../models/nodtification.model");
 
 // Constants
 const {
@@ -181,9 +182,13 @@ exports.signin = async (req, res) => {
   if (user.password !== password) {
     return res.status(401).send({ error: true, message: INVALID_PASSWORD });
   } else {
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { _id: user._id, name: user.name },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "1d",
+      }
+    );
     return res.status(200).send({
       error: false,
       data: {
@@ -219,4 +224,47 @@ exports.uploadUserImage = async (req, res) => {
     message: "Your profile image saved successfully.",
     data: { imgUrl: updatedUser.imgUrl },
   });
+};
+
+exports.addFriend = async (req, res) => {
+  const { id } = req.params;
+
+  const Notification = new NotificatiobModel({
+    user: id,
+    message: `${req.name} wants to be your friend`,
+    requestedUser: req.userId,
+  });
+
+  const savedNotificaion = await Notification.save();
+
+  return res
+    .status(201)
+    .send({ error: false, message: "Friend request sent successfully" });
+};
+
+exports.acceptFriendRequest = async (req, res) => {
+  const { id } = req.params;
+
+  const notification = await NotificatiobModel.findById(id);
+
+  await UserModel.findByIdAndUpdate(
+    req.userId,
+    {
+      $push: { friends: notification.requestedUser },
+    },
+    { new: true }
+  );
+
+  await UserModel.findByIdAndUpdate(
+    notification.requestedUser,
+    {
+      $push: { friends: req.userId },
+    },
+    { new: true }
+  );
+
+  await notification.remove();
+  return res
+    .status(200)
+    .send({ error: false, message: "Friend request accepted" });
 };
