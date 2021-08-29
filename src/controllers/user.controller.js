@@ -203,7 +203,6 @@ exports.signin = async (req, res) => {
 };
 
 exports.uploadUserImage = async (req, res) => {
-  console.log(req.file);
   if (!req.file) {
     return res.send({
       error: true,
@@ -267,4 +266,9 @@ exports.acceptFriendRequest = async (req, res) => {
   return res
     .status(200)
     .send({ error: false, message: "Friend request accepted" });
+};
+
+exports.getFriends = async (req, res) => {
+  const user = await UserModel.findById(req.userId).populate("friends", "name");
+  return res.status(200).send({ error: false, data: user.friends });
 };
