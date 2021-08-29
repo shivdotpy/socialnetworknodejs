@@ -23,6 +23,7 @@ const {
   INVALID_PASSWORD,
   ACCOUNT_ALREADY_ACTIVATED,
   ACTIVATE_CODE_RESEND,
+  ERROR_UPLOADING_IMAGE,
 } = require("../utils/constants");
 
 exports.signup = async (req, res) => {
@@ -206,7 +207,7 @@ exports.uploadUserImage = async (req, res) => {
   if (!req.file) {
     return res.send({
       error: true,
-      message: "Error uploading user image",
+      message: ERROR_UPLOADING_IMAGE,
     });
   }
 
@@ -220,7 +221,7 @@ exports.uploadUserImage = async (req, res) => {
 
   return res.status(200).send({
     error: false,
-    message: "Your profile image saved successfully.",
+    message: SUCCESS_UPLOADING_IMAGE,
     data: { imgUrl: updatedUser.imgUrl },
   });
 };
