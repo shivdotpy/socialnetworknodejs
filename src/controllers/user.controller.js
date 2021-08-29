@@ -269,6 +269,9 @@ exports.acceptFriendRequest = async (req, res) => {
 };
 
 exports.getFriends = async (req, res) => {
-  const user = await UserModel.findById(req.userId).populate("friends", "name");
+  const user = await UserModel.findById(req.userId).populate(
+    "friends",
+    "name imgUrl"
+  );
   return res.status(200).send({ error: false, data: user.friends });
 };
