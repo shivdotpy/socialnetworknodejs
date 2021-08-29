@@ -24,6 +24,7 @@ const {
   ACCOUNT_ALREADY_ACTIVATED,
   ACTIVATE_CODE_RESEND,
   ERROR_UPLOADING_IMAGE,
+  SUCCESS_UPLOADING_IMAGE,
 } = require("../utils/constants");
 
 exports.signup = async (req, res) => {
