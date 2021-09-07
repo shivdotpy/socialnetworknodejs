@@ -205,8 +205,10 @@ exports.signin = async (req, res) => {
 };
 
 exports.uploadUserImage = async (req, res) => {
-  if (!req.file) {
-    return res.send({
+  const { image } = req.body;
+
+  if (!image) {
+    return res.status(400).send({
       error: true,
       message: ERROR_UPLOADING_IMAGE,
     });
@@ -215,7 +217,7 @@ exports.uploadUserImage = async (req, res) => {
   const updatedUser = await UserModel.findByIdAndUpdate(
     req.userId,
     {
-      imgUrl: req.file.path,
+      imgUrl: image,
     },
     { new: true }
   );
