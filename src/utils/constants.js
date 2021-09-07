@@ -37,7 +37,7 @@ exports.POST_LIKED = "Post liked";
 exports.POST_DISLIKED = "Post disliked";
 
 // API MESSAGES (UPLOAD USER IMAGE)
-exports.ERROR_UPLOADING_IMAGE = "Error uploading user image";
+exports.ERROR_UPLOADING_IMAGE = "Please provide image";
 exports.SUCCESS_UPLOADING_IMAGE = "Your profile image saved successfully.";
 
 // AUTHORIZATION MESSAGES
