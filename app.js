@@ -32,7 +32,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 app.use(cors());
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/", (req, res) =>
