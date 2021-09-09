@@ -23,7 +23,10 @@ exports.createPost = async (req, res) => {
   if (global.io && global.io.sockets && global.io.sockets.emit) {
     global.io.sockets.emit(
       "new-post",
-      await PostModel.populate(createdPost, { path: "user", select: "name" })
+      await PostModel.populate(createdPost, {
+        path: "user",
+        select: "name imgUrl",
+      })
     );
   }
 
@@ -53,8 +56,8 @@ exports.getLatestPosts = async (req, res) => {
   const posts = await PostModel.find()
     .limit(10)
     .sort({ createdAt: "desc" })
-    .populate("user", "name")
-    .populate("comments.user", "name");
+    .populate("user", "name imgUrl")
+    .populate("comments.user", "name imgUrl");
 
   const postsClone = [...posts];
   postsClone.forEach((post) => {
@@ -126,7 +129,7 @@ exports.addComment = async (req, res) => {
 
   const { _id, comments } = await PostModel.populate(updatedPost, {
     path: "comments.user",
-    select: "name",
+    select: "name imgUrl",
   });
 
   // Socket
@@ -152,7 +155,7 @@ exports.deleteComment = async (req, res) => {
 
   const { _id, comments } = await PostModel.populate(updatedPost, {
     path: "comments.user",
-    select: "name",
+    select: "name imgUrl",
   });
 
   // Socket
