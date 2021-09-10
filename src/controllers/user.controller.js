@@ -1,5 +1,6 @@
 const { generatePin } = require("generate-pin");
 const jwt = require("jsonwebtoken");
+const AWS = require("aws-sdk");
 
 const sendEmail = require("../utils/mailer");
 
@@ -204,7 +205,7 @@ exports.signin = async (req, res) => {
   }
 };
 
-exports.uploadUserImage = async (req, res) => {
+exports.uploadUserImage = (req, res) => {
   const { image } = req.body;
 
   if (!image) {
@@ -214,18 +215,53 @@ exports.uploadUserImage = async (req, res) => {
     });
   }
 
-  const updatedUser = await UserModel.findByIdAndUpdate(
-    req.userId,
-    {
-      imgUrl: image,
-    },
-    { new: true }
+  const { S3_ACCESS_KEY, S3_SECRET_KEY } = process.env;
+
+  const awsConfig = {
+    accessKeyId: S3_ACCESS_KEY,
+    secretAccessKey: S3_SECRET_KEY,
+    region: process.env.S3_REGION,
+  };
+
+  AWS.config.update(awsConfig);
+
+  const S3 = new AWS.S3({ params: { Bucket: "socialnetworkuserimages" } });
+
+  const buf = new Buffer(
+    req.body.image.replace(/^data:image\/\w+;base64,/, ""),
+    "base64"
   );
 
-  return res.status(200).send({
-    error: false,
-    message: SUCCESS_UPLOADING_IMAGE,
-    data: { imgUrl: updatedUser.imgUrl },
+  const data = {
+    Key: req.userId,
+    Body: buf,
+    ContentEncoding: "base64",
+    ContentType: "image/jpeg",
+    ACL: "public-read",
+  };
+
+  S3.putObject(data, async function (err, data) {
+    if (err) {
+      return res.status(500).send({
+        error: false,
+        message: ERROR_UPLOADING_IMAGE,
+        data: err,
+      });
+    } else {
+      const updatedUser = await UserModel.findByIdAndUpdate(
+        req.userId,
+        {
+          imgUrl: `https://socialnetworkuserimages.s3.ap-south-1.amazonaws.com/${req.userId}`,
+        },
+        { new: true }
+      );
+
+      return res.status(200).send({
+        error: false,
+        message: SUCCESS_UPLOADING_IMAGE,
+        data: { imgUrl: updatedUser.imgUrl },
+      });
+    }
   });
 };
 
