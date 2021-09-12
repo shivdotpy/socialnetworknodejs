@@ -66,6 +66,21 @@ exports.getLatestPosts = async (req, res) => {
   return res.status(200).send({ error: false, data: postsClone });
 };
 
+exports.loadMorePosts = async (req, res) => {
+  const posts = await PostModel.find()
+    .sort({ createdAt: "desc" })
+    .skip(10)
+    .limit(40)
+    .populate("user", "name imgUrl")
+    .populate("comments.user", "name imgUrl");
+
+  const postsClone = [...posts];
+  postsClone.forEach((post) => {
+    post.comments.sort((c1, c2) => c2.updatedAt - c1.updatedAt);
+  });
+  return res.status(200).send({ error: false, data: postsClone });
+};
+
 exports.likePost = async (req, res) => {
   const { id } = req.params;
 
