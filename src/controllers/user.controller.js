@@ -26,6 +26,7 @@ const {
   ACTIVATE_CODE_RESEND,
   ERROR_UPLOADING_IMAGE,
   SUCCESS_UPLOADING_IMAGE,
+  PLEASE_ACTIVATE_ACCOUNT_BEFORE_LOGIN,
 } = require("../utils/constants");
 
 exports.signup = async (req, res) => {
@@ -180,6 +181,12 @@ exports.signin = async (req, res) => {
       error: true,
       message: ACCOUNT_NOT_AVAILABLE,
     });
+  }
+
+  if (!user.activated) {
+    return res
+      .status(401)
+      .send({ error: false, message: PLEASE_ACTIVATE_ACCOUNT_BEFORE_LOGIN });
   }
 
   if (user.password !== password) {

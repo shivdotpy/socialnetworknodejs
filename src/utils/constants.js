@@ -24,6 +24,8 @@ exports.ACCOUNT_ALREADY_ACTIVATED = "Your account is already activated";
 exports.ACCOUNT_NOT_AVAILABLE = "This account is not available";
 exports.INVALID_PASSWORD = "Password is incorrect please try again";
 exports.ACTIVATE_CODE_RESEND = "Code successfully sent to your email";
+exports.PLEASE_ACTIVATE_ACCOUNT_BEFORE_LOGIN =
+  "Please activate your account through email OTP before login";
 
 // API MESSAGES (POSTS)
 exports.ENTER_TEXT = "Please enter some text";
