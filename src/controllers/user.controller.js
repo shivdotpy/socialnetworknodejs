@@ -27,6 +27,7 @@ const {
   ERROR_UPLOADING_IMAGE,
   SUCCESS_UPLOADING_IMAGE,
   PLEASE_ACTIVATE_ACCOUNT_BEFORE_LOGIN,
+  ALREADY_FRIEND_REQUESTED,
 } = require("../utils/constants");
 
 exports.signup = async (req, res) => {
@@ -274,6 +275,17 @@ exports.uploadUserImage = (req, res) => {
 
 exports.addFriend = async (req, res) => {
   const { id } = req.params;
+
+  const notificationAvailable = await NotificatiobModel.findOne({
+    user: id,
+    requestedUser: req.userId,
+  });
+
+  if (notificationAvailable) {
+    return res
+      .status(400)
+      .send({ error: true, message: ALREADY_FRIEND_REQUESTED });
+  }
 
   const Notification = new NotificatiobModel({
     user: id,
