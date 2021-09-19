@@ -20,7 +20,7 @@ const sendEmail = (email, subject, text) => {
 
   mailTransporter.sendMail(mailDetails, function (err, data) {
     if (err) {
-      console.log(chalk.red("Error Occurs"));
+      console.log(chalk.red("Error Occurs"), err);
     } else {
       console.log("Email sent successfully");
     }
