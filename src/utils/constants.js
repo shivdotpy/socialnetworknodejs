@@ -45,3 +45,6 @@ exports.SUCCESS_UPLOADING_IMAGE = "Your profile image saved successfully.";
 // AUTHORIZATION MESSAGES
 exports.NO_ACCESS_TOKEN = "Please provide access token";
 exports.SESSION_EXPIRED = "Session expired please login again";
+
+exports.ALREADY_FRIEND_REQUESTED =
+  "Friend request sent already, please wait to accept/reject";
